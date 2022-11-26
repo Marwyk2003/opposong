@@ -20,8 +20,9 @@ def index():
     if request.method == 'POST':
         f = request.files['file']
         s = ShazamWrapper(f)
-        print(s.getData())
-    #   f.save(secure_filename(f.filename))
+        trackid = spotify_client.getMeatdata(*s.getData())
+        trackStats = spotify_client.getTrackData(trackid)
+        print(trackStats)
         return 'file uploaded successfully'
     else:
         return render_template('index.html', content={})

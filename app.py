@@ -1,9 +1,10 @@
 import yaml
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect
 from spotify import Client
 from shazam import ShazamWrapper
 
 app = Flask(__name__)
+app.config['TEMPLATES_AUTO_RELOAD'] = True
 
 with open('config.yml', 'r') as ymlfile:
     cfg = yaml.safe_load(ymlfile)
@@ -17,12 +18,20 @@ spotify_client = Client('user-read-currently-playing',
 
 @app.route("/", methods=['POST', 'GET'])
 def index():
+    track=''
+    artist=''
     if request.method == 'POST':
+        print("~")
         f = request.files['file']
         s = ShazamWrapper(f)
-        trackid = spotify_client.getMeatdata(*s.getData())
+        shazamData = s.getData()
+        track = shazamData['track']
+        artist = shazamData['artist']
+        trackid = spotify_client.getMeatdata(track, artist)
         trackStats = spotify_client.getTrackData(trackid)
-        print(trackStats)
-        return 'file uploaded successfully'
+        print(track, artist)
+        return render_template('index.html', track=track, artist=artist)
     else:
-        return render_template('index.html', content={})
+        # return flask.send_file('/maps/map.html')
+
+        return render_template('index.html', track=track, artist=artist)

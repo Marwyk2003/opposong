@@ -11,4 +11,4 @@ class ShazamWrapper:
         respomse = next(self.recognize_generator)
         track = respomse[1]['track']['title']
         artist = respomse[1]['track']['subtitle']
-        return {'title': track, 'artist': artist}
+        return {'track': track, 'artist': artist}
